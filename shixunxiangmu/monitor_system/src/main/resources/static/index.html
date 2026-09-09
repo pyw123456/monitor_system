@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>监控大屏 · 智瞳 AI智能安防监控系统</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="frame">
+
+  <!-- ================= 顶栏 ================= -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo-badge">
+        <svg viewBox="0 0 24 24" width="21" height="21" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="gShieldTop" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#2AD6FF"/><stop offset="1" stop-color="#8B7CFF"/>
+            </linearGradient>
+          </defs>
+          <path d="M12 1.8 3.8 4.9v6.3c0 5.2 3.5 9.8 8.2 11.2 4.7-1.4 8.2-6 8.2-11.2V4.9L12 1.8z" fill="url(#gShieldTop)"/>
+          <ellipse cx="12" cy="10.6" rx="3.7" ry="2.7" fill="#0A1120"/>
+          <circle cx="12" cy="10.6" r="1.5" fill="#7BE4FF"/>
+          <path d="M8.3 15.6l2-1.7M15.7 15.6l-2-1.7" stroke="#0A1120" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="logo-title">智瞳 · AI智能安防监控系统<span class="en">ZHITONG · AI SECURITY MONITOR</span></div>
+    </div>
+    <div class="top-right">
+      <div class="sys-time"><span id="sysTime">--:--:--</span><span class="date" id="sysDate">----</span></div>
+      <button class="bell-btn" title="告警通知">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 9a6 6 0 0 1 12 0c0 5 2 6.2 2 6.2H4S6 14 6 9z"/>
+          <path d="M10.3 19.5a2 2 0 0 0 3.4 0"/>
+        </svg>
+      </button>
+      <div class="avatar-chip">
+        <div class="avatar">管</div>
+        <div class="who">管理员<span class="role">超级管理员</span></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- ================= 侧栏 ================= -->
+    <aside class="sidebar">
+      <nav class="side-nav">
+        <a class="nav-item active" href="index.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>
+          </svg>
+          监控大屏
+        </a>
+        <a class="nav-item" href="devices.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2.5" y="6.5" width="13" height="11" rx="2"/><path d="M15.5 10.5 21.5 7.2v9.6l-6-3.3"/>
+          </svg>
+          设备信息
+        </a>
+        <a class="nav-item" href="records.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 8V5.5A1.5 1.5 0 0 1 5.5 4H8M16 4h2.5A1.5 1.5 0 0 1 20 5.5V8M20 16v2.5a1.5 1.5 0 0 1-1.5 1.5H16M8 20H5.5A1.5 1.5 0 0 1 4 18.5V16"/><circle cx="12" cy="12" r="3.2"/>
+          </svg>
+          AI识别记录
+        </a>
+        <a class="nav-item" href="alarms.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 9a6 6 0 0 1 12 0c0 5 2 6.2 2 6.2H4S6 14 6 9z"/><path d="M10.3 19.5a2 2 0 0 0 3.4 0"/>
+          </svg>
+          实时告警中心
+        </a>
+        <a class="nav-item" href="handling.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 4.5H7a2 2 0 0 0-2 2V19a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6.5a2 2 0 0 0-2-2h-2"/>
+            <rect x="9" y="2.8" width="6" height="3.4" rx="1.2"/>
+            <path d="M9 13.5l2.2 2.2 4-4.4"/>
+          </svg>
+          告警处置记录
+        </a>
+      </nav>
+
+      </aside>
+
+    <!-- ================= 主内容 ================= -->
+    <main class="main">
+      <div class="content">
+
+        <!-- 页头 -->
+        <div class="page-header">
+          <div class="page-title">监控大屏</div>
+          <div class="tools">
+            <div class="pill-group">
+              <button class="pill active">今日</button>
+              <button class="pill">近7日</button>
+              <button class="pill">近30日</button>
+            </div>
+            <span class="live-pill green"><span class="pulse"></span>实时刷新中</span>
+          </div>
+        </div>
+
+        <!-- KPI -->
+        <div class="kpi-row dash-kpis">
+          <div class="kpi" style="--kpi-accent:#2AD6FF; --kpi-dim:var(--cyan-dim)" data-kpi="deviceTotal">
+            <div class="kpi-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="7" rx="1.5"/><rect x="3" y="13" width="18" height="7" rx="1.5"/><path d="M7 7.5h.01M7 16.5h.01"/></svg>
+              接入设备
+            </div>
+            <div class="kpi-value null-val">Null<span class="unit">台</span></div>
+            <div class="kpi-foot">在线 <span class="mono null-val">Null</span> · 离线 <span class="mono null-val">Null</span></div>
+            <div class="kpi-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6.5" width="13" height="11" rx="2"/><path d="M15.5 10.5 21.5 7.2v9.6l-6-3.3"/></svg>
+            </div>
+          </div>
+          <div class="kpi" style="--kpi-accent:#3DDC97; --kpi-dim:var(--green-dim)" data-kpi="onlineRate">
+            <div class="kpi-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+              设备在线率
+            </div>
+            <div class="kpi-value null-val">Null<span class="unit">%</span></div>
+            <div class="kpi-foot">在线 <span class="mono null-val">Null</span> · 离线 <span class="mono null-val">Null</span></div>
+            <div class="kpi-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h4l3-8 4 16 3-8h6"/></svg>
+            </div>
+          </div>
+          <div class="kpi" style="--kpi-accent:#8B7CFF; --kpi-dim:rgba(139,124,255,.12)" data-kpi="aiToday">
+            <div class="kpi-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V5.5A1.5 1.5 0 0 1 5.5 4H8M16 4h2.5A1.5 1.5 0 0 1 20 5.5V8M20 16v2.5a1.5 1.5 0 0 1-1.5 1.5H16M8 20H5.5A1.5 1.5 0 0 1 4 18.5V16"/><circle cx="12" cy="12" r="3.2"/></svg>
+              今日AI识别
+            </div>
+            <div class="kpi-value null-val">Null<span class="unit">次</span></div>
+            <div class="kpi-foot"><span class="null-val">Null</span>较昨日</div>
+            <div class="kpi-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/><circle cx="12" cy="12" r="3.4"/></svg>
+            </div>
+          </div>
+          <div class="kpi accent-red" data-kpi="pending">
+            <div class="kpi-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4 2.8 19.5h18.4L12 4z"/><path d="M12 10v4.2M12 17h.01"/></svg>
+              待处置告警
+            </div>
+            <div class="kpi-value null-val">Null<span class="unit">条</span></div>
+            <div class="kpi-foot">紧急 <span class="mono null-val">Null</span> · 警告 <span class="mono null-val">Null</span> · 提示 <span class="mono null-val">Null</span></div>
+            <div class="kpi-icon" style="--kpi-accent:var(--red); --kpi-dim:var(--red-dim)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6.2 2 6.2H4S6 14 6 9z"/><path d="M10.3 19.5a2 2 0 0 0 3.4 0"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- 视频墙 + 实时告警 -->
+        <div class="dash-mid">
+
+          <!-- 2×2 视频监控墙 -->
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title">视频监控墙</span>
+              <span class="sub">Null 路分屏轮巡</span>
+            </div>
+            <div style="padding:12px;">
+              <div class="video-wall">
+
+                <!-- 摄像头 1：施工现场A区 -->
+                <div class="cam">
+                  <div class="scene">
+                    <svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice">
+                      <rect width="320" height="180" fill="#0A1424"/>
+                      <rect width="320" height="180" fill="url(#cam1Sky)"/>
+                      <defs>
+                        <linearGradient id="cam1Sky" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0" stop-color="#13233D"/><stop offset="1" stop-color="#0A1424"/>
+                        </linearGradient>
+                      </defs>
+                      <!-- 地面 -->
+                      <path d="M0 128 L320 118 L320 180 L0 180 Z" fill="#0E1B30"/>
+                      <path d="M0 128 L320 118" stroke="#1B2C48" stroke-width="1"/>
+                      <!-- 透视网格 -->
+                      <path d="M60 180 L128 121M160 180 L162 119M260 180 L200 121" stroke="#152540" stroke-width=".8"/>
+                      <path d="M0 140 H320M0 160 H320" stroke="#14213A" stroke-width=".7"/>
+                      <!-- 塔吊 -->
+                      <g stroke="#22375C" stroke-width="2" fill="none">
+                        <path d="M262 122 V36M262 40 H96M262 36 l-14 8M262 36 l14 8"/>
+                        <path d="M150 40 v14M150 54 h16"/>
+                      </g>
+                      <path d="M150 54 l3 10" stroke="#22375C" stroke-width="1"/>
+                      <!-- 围挡 -->
+                      <g stroke="#1C2E4C" stroke-width="2"><path d="M8 126 h58M8 118 h58M10 110 v16M28 110 v16M46 110 v16M64 110 v16"/></g>
+                      <!-- 材料堆 -->
+                      <path d="M228 122 l16-14 16 14 z" fill="#12203A" stroke="#1D3050" stroke-width="1"/>
+                      <path d="M196 126 l11-9 11 9 z" fill="#101D34" stroke="#1B2C48" stroke-width="1"/>
+                      <!-- 工人（未佩戴安全帽） -->
+                      <g fill="#0B1424" stroke="#28405F" stroke-width=".8">
+                        <circle cx="118" cy="108" r="3.4"/>
+                        <path d="M114.4 112.5 h7.2 l1.2 8.5 h-9.6 z"/>
+                        <path d="M115.2 121 h2.6 l.7 7 h-2 z M121.4 121 h2.6 l-1.3 7 h-2 z"/>
+                      </g>
+                      <!-- 工人（已佩戴） -->
+                      <g fill="#0B1424" stroke="#28405F" stroke-width=".8">
+                        <circle cx="152" cy="110" r="3.4" fill="#12405A"/>
+                        <path d="M148.4 114.5 h7.2 l1.2 8.5 h-9.6 z"/>
+                        <path d="M149.2 123 h2.6 l.7 7 h-2 z M155.4 123 h2.6 l-1.3 7 h-2 z"/>
+                      </g>
+                      <!-- 光斑 -->
+                      <ellipse cx="70" cy="60" rx="60" ry="30" fill="#2AD6FF" opacity=".04"/>
+                    </svg>
+                  </div>
+                  <div class="scanlines"></div>
+                  <span class="cam-name">监控通道 1 <span class="mono">--</span></span>
+                  <span class="live"><i></i>LIVE</span>
+                </div>
+
+                <!-- 摄像头 2：东门周界 -->
+                <div class="cam">
+                  <div class="scene">
+                    <svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice">
+                      <rect width="320" height="180" fill="#0A1322"/>
+                      <defs>
+                        <linearGradient id="cam2Sky" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0" stop-color="#101F38"/><stop offset="1" stop-color="#0A1320"/>
+                        </linearGradient>
+                      </defs>
+                      <rect width="320" height="180" fill="url(#cam2Sky)"/>
+                      <!-- 道路 -->
+                      <path d="M118 96 L202 96 L296 180 L24 180 Z" fill="#0D1830"/>
+                      <path d="M160 96 v84" stroke="#23385A" stroke-width="2" stroke-dasharray="8 10" opacity=".7"/>
+                      <path d="M118 96 L24 180M202 96 L296 180" stroke="#1A2C48" stroke-width="1.2"/>
+                      <!-- 门柱 -->
+                      <g fill="#13233C" stroke="#24395C" stroke-width="1">
+                        <rect x="104" y="52" width="14" height="46" rx="2"/>
+                        <rect x="202" y="52" width="14" height="46" rx="2"/>
+                      </g>
+                      <rect x="104" y="46" width="14" height="4" fill="#2AD6FF" opacity=".55"/>
+                      <rect x="202" y="46" width="14" height="4" fill="#2AD6FF" opacity=".55"/>
+                      <!-- 电动门横杆 -->
+                      <g stroke="#1E3352" stroke-width="2"><path d="M118 66 h98M118 76 h98"/></g>
+                      <!-- 周界围墙 -->
+                      <path d="M0 60 h104M216 60 h104" stroke="#1B2C48" stroke-width="3"/>
+                      <g stroke="#16263F" stroke-width="1.4"><path d="M0 52 h104M216 52 h104M0 44 h104M216 44 h104"/></g>
+                      <!-- 闯入人员 -->
+                      <g fill="#0B1424" stroke="#2C3F62" stroke-width=".8">
+                        <circle cx="238" cy="118" r="3.6"/>
+                        <path d="M234.2 122.8 h7.6 l1.3 9 h-10.2 z"/>
+                        <path d="M235 131.8 h2.7 l.8 8 h-2.2 z M242.1 131.8 h2.7 l-1.3 8 h-2.2 z"/>
+                      </g>
+                      <ellipse cx="260" cy="52" rx="70" ry="26" fill="#8B7CFF" opacity=".05"/>
+                    </svg>
+                  </div>
+                  <div class="scanlines"></div>
+                  <span class="cam-name">监控通道 2 <span class="mono">--</span></span>
+                  <span class="live"><i></i>LIVE</span>
+                </div>
+
+                <!-- 摄像头 3：仓库通道 -->
+                <div class="cam">
+                  <div class="scene">
+                    <svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice">
+                      <rect width="320" height="180" fill="#0A1220"/>
+                      <defs>
+                        <linearGradient id="cam3Sky" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0" stop-color="#0F1D34"/><stop offset="1" stop-color="#0A1220"/>
+                        </linearGradient>
+                      </defs>
+                      <rect width="320" height="180" fill="url(#cam3Sky)"/>
+                      <!-- 通道地面 -->
+                      <path d="M96 62 L224 62 L282 180 L38 180 Z" fill="#0D1728"/>
+                      <path d="M96 62 L38 180M224 62 L282 180" stroke="#1A2A44" stroke-width="1.2"/>
+                      <path d="M110 92 h100M104 118 h112M98 146 h124" stroke="#142136" stroke-width=".8"/>
+                      <!-- 货架 -->
+                      <g fill="#101E36" stroke="#22375A" stroke-width="1">
+                        <rect x="8" y="34" width="88" height="86"/>
+                        <rect x="224" y="34" width="88" height="86"/>
+                      </g>
+                      <g stroke="#1B2C48" stroke-width="1.2">
+                        <path d="M8 62 h88M8 90 h88M224 62 h88M224 90 h88"/>
+                        <path d="M30 90 v30M52 90 v30M74 90 v30M246 90 v30M268 90 v30M290 90 v30"/>
+                      </g>
+                      <!-- 货箱 -->
+                      <g fill="#152742" stroke="#24406A" stroke-width=".8">
+                        <rect x="14" y="40" width="16" height="14"/><rect x="36" y="40" width="16" height="14"/>
+                        <rect x="14" y="66" width="16" height="16"/><rect x="60" y="66" width="16" height="16"/>
+                        <rect x="240" y="40" width="16" height="14"/><rect x="282" y="40" width="16" height="14"/>
+                        <rect x="262" y="66" width="16" height="16"/><rect x="240" y="96" width="16" height="16"/>
+                      </g>
+                      <!-- 徘徊人员 -->
+                      <g fill="#0B1424" stroke="#2C3F62" stroke-width=".8">
+                        <circle cx="160" cy="112" r="3.6"/>
+                        <path d="M156.2 116.8 h7.6 l1.3 9 h-10.2 z"/>
+                        <path d="M157 125.8 h2.7 l.4 9 h-2 z M165.1 125.8 h2.7 l-.6 9 h-2 z"/>
+                      </g>
+                      <ellipse cx="160" cy="40" rx="60" ry="22" fill="#8B7CFF" opacity=".06"/>
+                    </svg>
+                  </div>
+                  <div class="scanlines"></div>
+                  <span class="cam-name">监控通道 3 <span class="mono">--</span></span>
+                  <span class="live"><i></i>LIVE</span>
+                </div>
+
+                <!-- 摄像头 4：配电房 -->
+                <div class="cam">
+                  <div class="scene">
+                    <svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice">
+                      <rect width="320" height="180" fill="#0A1220"/>
+                      <defs>
+                        <linearGradient id="cam4Sky" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0" stop-color="#111E33"/><stop offset="1" stop-color="#0A1220"/>
+                        </linearGradient>
+                        <radialGradient id="cam4Smoke" cx=".5" cy=".5" r=".5">
+                          <stop offset="0" stop-color="#3A4A66" stop-opacity=".5"/><stop offset="1" stop-color="#3A4A66" stop-opacity="0"/>
+                        </radialGradient>
+                      </defs>
+                      <rect width="320" height="180" fill="url(#cam4Sky)"/>
+                      <!-- 地面 -->
+                      <rect y="132" width="320" height="48" fill="#0D1728"/>
+                      <path d="M0 132 h320" stroke="#1B2C48" stroke-width="1.2"/>
+                      <path d="M80 180 L118 132M240 180 L202 132" stroke="#142136" stroke-width=".8"/>
+                      <!-- 配电柜 -->
+                      <g fill="#111F38" stroke="#25395C" stroke-width="1.2">
+                        <rect x="36" y="46" width="64" height="86" rx="3"/>
+                        <rect x="128" y="46" width="64" height="86" rx="3"/>
+                        <rect x="220" y="46" width="64" height="86" rx="3"/>
+                      </g>
+                      <g stroke="#1C2F4E" stroke-width="1">
+                        <path d="M36 78 h64M128 78 h64M220 78 h64"/>
+                        <path d="M48 56 h40M48 66 h40M140 56 h40M140 66 h40M232 56 h40M232 66 h40"/>
+                        <path d="M48 94 h40M140 94 h40M232 94 h40M48 104 h40M140 104 h40M232 104 h40"/>
+                      </g>
+                      <!-- 指示灯 -->
+                      <circle cx="88" cy="60" r="2" fill="#3DDC97"/><circle cx="180" cy="60" r="2" fill="#3DDC97"/>
+                      <circle cx="264" cy="60" r="2" fill="#FFC53D"/>
+                      <!-- 警示标 -->
+                      <path d="M160 22 l5 9 h-10 z" fill="none" stroke="#FFC53D" stroke-width="1.4"/>
+                      <!-- 烟雾 -->
+                      <ellipse cx="252" cy="38" rx="34" ry="14" fill="url(#cam4Smoke)"/>
+                      <ellipse cx="236" cy="30" rx="18" ry="9" fill="url(#cam4Smoke)" opacity=".8"/>
+                      <ellipse cx="264" cy="26" rx="14" ry="7" fill="url(#cam4Smoke)" opacity=".6"/>
+                    </svg>
+                  </div>
+                  <div class="scanlines"></div>
+                  <span class="cam-name">监控通道 4 <span class="mono">--</span></span>
+                  <span class="live"><i></i>LIVE</span>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- 实时告警面板 -->
+          <div class="card alarm-panel">
+            <div class="card-head">
+              <span class="card-title">实时告警</span>
+              <span class="sub">今日 <span class="mono null-val">Null</span> 条</span>
+              <span class="more">查看全部 →</span>
+            </div>
+            <div class="lvl-summary">
+              <div class="lvl-pill urgent"><span class="n null-val">Null</span><span class="t">紧急</span></div>
+              <div class="lvl-pill warn"><span class="n null-val">Null</span><span class="t">警告</span></div>
+              <div class="lvl-pill info"><span class="n null-val">Null</span><span class="t">提示</span></div>
+            </div>
+            <div class="alarm-list">
+              <div class="empty-state" style="flex:1; min-height:220px;">
+                <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 9a6 6 0 0 1 12 0c0 5 2 6.2 2 6.2H4S6 14 6 9z"/><path d="M10.3 19.5a2 2 0 0 0 3.4 0"/>
+                </svg>
+                <span class="es-title">暂无告警记录</span>
+                <span class="es-sub">数据待接入</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 底部图表 -->
+        <div class="dash-bottom">
+
+          <!-- 近7日趋势：柱线混合图 -->
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title">近7日告警与AI识别趋势</span>
+              <div class="legend" style="margin-left:auto;">
+                <span class="lg"><i style="background:linear-gradient(180deg,#4FE0FF,#0FB5DF);"></i>AI识别次数</span>
+                <span class="lg"><i style="background:none;width:14px;height:2px;border-radius:1px;background:#8B7CFF;position:relative;"></i>告警次数</span>
+              </div>
+            </div>
+            <div class="chart-body">
+              <div class="empty-state" style="height:100%; min-height:200px;">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 20h18"/><path d="M7 16v-5M12 16V8M17 16v-8"/>
+                </svg>
+                <span class="es-title">暂无趋势数据</span>
+                <span class="es-sub">数据待接入</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 识别类型分布：五段环形图 -->
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title">识别类型分布</span>
+              <span class="sub">今日</span>
+            </div>
+            <div class="donut-wrap">
+              <svg width="180" height="180" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+                <g transform="rotate(-90 90 90)">
+                  <circle cx="90" cy="90" r="70" fill="none" stroke="#16233C" stroke-width="22"/>
+                </g>
+                <text x="90" y="88" text-anchor="middle" fill="#E8F0FB"
+                      font-family="'JetBrains Mono',monospace" font-size="24" font-weight="800">Null</text>
+                <text x="90" y="106" text-anchor="middle" fill="#8CA2C3" font-size="10">今日识别次数</text>
+              </svg>
+              <div class="donut-legend">
+                <span class="lg"><i style="background:#2AD6FF"></i>未佩戴安全帽<span class="v null-val">Null</span><span class="p null-val">Null</span></span>
+                <span class="lg"><i style="background:#FF5D5D"></i>人员闯入<span class="v null-val">Null</span><span class="p null-val">Null</span></span>
+                <span class="lg"><i style="background:#8B7CFF"></i>人员徘徊<span class="v null-val">Null</span><span class="p null-val">Null</span></span>
+                <span class="lg"><i style="background:#FFC53D"></i>烟火<span class="v null-val">Null</span><span class="p null-val">Null</span></span>
+                <span class="lg"><i style="background:#5B6B85"></i>其他<span class="v null-val">Null</span><span class="p null-val">Null</span></span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+<script src="js/common.js"></script>
+<script src="js/data.js"></script>
+</body>
+</html>

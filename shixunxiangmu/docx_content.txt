@@ -1,0 +1,325 @@
+YOLOv5 双模型校园安防实训指南
+使用现成权重完成识别和后端联动
+模型
+直接使用的权重
+负责识别
+COCO 通用模型
+yolov5s-coco.pt
+person、car、bicycle、dog、backpack 等
+D-Fire 烟火模型
+yolov5s-dfire.pt
+fire、smoke
+本实训不安排正式训练。学生理解模型、数据集、权重和推理的关系，加载两个现成的 .pt 权重，对校园图片执行识别，再把合并结果提交给 Java 后端。
+完成结果
+□ COCO 模型能识别人、车辆、动物和物品
+□ D-Fire 模型能识别火焰和烟雾
+□ 同一张图片能得到两个模型的合并结果
+□ 图片投入 ai-watch 后约 2 秒自动识别
+□ 图片识别完成后移动到“已检测”
+□ 识别结果能直接提交 Java 后端并生成告警
+一概念
+YOLO 是什么
+YOLO 是一个“看图片并找东西”的程序。给它一张图片，它会回答三个问题：图片里有什么、目标在哪里、它有多大把握。
+输入：一张校园图片输出：person 0.94、car 0.88、fire 0.91
+person、car、fire 是类别；0.94、0.88、0.91 是置信度。0.94 可以理解为模型有约 94% 的把握。
+数据集是什么
+数据集就是“带答案的图片教材”。图片是题目，标注是标准答案。标注会告诉模型目标是什么以及目标在图片中的位置。
+COCO 和 COCO8 是什么
+COCO 是一套大型通用图片数据集，包含人、车、自行车、狗、背包等常见目标。COCO8 是从 COCO 中选出的 8 张小样例，主要用于快速展示数据格式和训练流程。项目真正使用的是基于完整 COCO 训练完成的 yolov5s 权重，不需要用 COCO8 重新训练。
+D-Fire 是什么
+D-Fire 是专门包含火焰、烟雾和正常负样本的图片数据集。D-Fire 作者已经提供用该数据集训练完成的 YOLOv5 权重，本实训直接使用该权重。
+模型训练是什么
+训练就是让模型反复查看图片和标准答案，猜错后调整内部参数。这个过程可能持续数小时甚至更久。训练完成后，会把学习结果保存成权重文件。
+图片和标注数据集 → 反复训练 → 生成 .pt 权重文件
+pt 文件是什么
+.pt 是 PyTorch 模型权重文件，可以理解为模型训练完成后保存下来的“学习成果”。日常识别不需要重新训练，只需要加载 .pt，然后输入图片。
+.pt 权重文件 + 新图片 → 推理 → 类别、位置和置信度
+推理是什么
+推理就是“使用训练好的模型识别新图片”。训练是学习，推理是使用。本实训主要完成推理和系统对接。
+二 本实训为什么使用两个模型
+COCO 权重擅长通用目标，但没有 fire 和 smoke。D-Fire 权重擅长烟火，但不负责完整的 COCO 类别。因此同一张图片需要依次交给两个模型。
+校园图片   ├─ yolov5s-coco.pt  → 人、车、自行车、狗、背包等   └─ yolov5s-dfire.pt → 火焰、烟雾                    ↓             合并 objects                    ↓       POST /api/ai/event                    ↓       Java 后端形成告警并推送页面
+平台场景如何产生
+模型识别结果
+后端业务判断
+1 个 person
+人员闯入
+2 个及以上 person
+人员聚集
+car、truck、bus 等
+车辆异常
+dog、cat 等
+动物进入
+backpack、suitcase 等
+物品异常
+fire 或 smoke
+烟火异常
+模型只输出 person，不直接输出“人员聚集”。后端统计 person 数量后再判断业务场景。
+三 目录结构
+所有模型相关文件放在 E:\model。
+E:\model├─ yolovenv                  # Python 虚拟环境├─ yolov5                    # YOLOv5 程序代码├─ models│  ├─ yolov5s-coco.pt        # COCO 通用权重│  └─ yolov5s-dfire.pt       # D-Fire 烟火权重├─ ai-watch                  # 待识别图片投入目录│  └─ 已检测                 # 识别完成后的图片目录├─ test-images               # 测试图片└─ server.py                 # 双模型识别服务
+四 安装环境
+推荐 Python 3.10 64 位。安装 Python 时勾选 Add python.exe to PATH。安装完成后重新打开 PowerShell。
+第 1 步  检查 Python
+py  --version   # 正常显示 Python 3.10.x
+第 2 步  创建目录和虚拟环境
+New-Item -ItemType Directory -Path "E:\model" -ForceSet-Location "E:\model"py  -m venv ".\yolovenv"
+第 3 步  激活环境
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass&amp; "E:\model\yolovenv\Scripts\Activate.ps1"
+第 4 步  更新 pip
+python -m pip install --upgrade pip setuptools wheel
+第 5 步  下载 YOLOv5 程序代码
+git clone https://github.com/ultralytics/yolov5.git "E:\model\yolov5"
+如果电脑没有 Git，可以在浏览器打开 https://github.com/ultralytics/yolov5，点击 Code、Download ZIP，将压缩包解压后把文件夹改名为 yolov5，并放到 E:\model。
+第 6 步  安装 YOLOv5 和服务依赖
+python -m pip install -r "E:\model\yolov5\requirements.txt"python -m pip install fastapi "uvicorn[standard]" requests
+第 7 步  创建其他目录
+New-Item -ItemType Directory -Force "E:\model\models"New-Item -ItemType Directory -Force "E:\model\ai-watch"New-Item -ItemType Directory -Force "E:\model\ai-watch\已检测"New-Item -ItemType Directory -Force "E:\model\test-images"
+五 准备两个现成权重
+COCO 通用权重
+在 E:\model\yolov5 中运行官方识别命令。YOLOv5 会准备 yolov5s.pt，并使用自带图片完成测试。
+Set-Location "E:\model\yolov5"python detect.py --weights yolov5s.pt --source data/images/bus.jpg --conf-thres 0.25
+命令完成后，将权重复制到 models，并使用明确的文件名：
+Copy-Item "E:\model\yolov5\yolov5s.pt" "E:\model\models\yolov5s-coco.pt" -Force
+D-Fire 烟火权重
+浏览器打开 D-Fire 作者的模型项目：https://github.com/pedbrgs/Fire-Detection。在README.md 部分下载 yolov5s 权重。下载完成后，将文件放到 E:\model\models，并改名为 yolov5s-dfire.pt。
+E:\model\models\yolov5s-dfire.pt
+两个权重文件准备完成后检查：
+Get-Item "E:\model\models\yolov5s-coco.pt"Get-Item "E:\model\models\yolov5s-dfire.pt"
+六 检查两个模型能否加载
+用记事本新建 E:\model\check_models.py，复制以下代码。
+import torchYOLOV5_DIR = r"E:\model\yolov5"COCO_PT = r"E:\model\models\yolov5s-coco.pt"DFIRE_PT = r"E:\model\models\yolov5s-dfire.pt"# source="local" 表示使用 E:\model\yolov5 中的代码。coco_model = torch.hub.load(    YOLOV5_DIR, "custom", path=COCO_PT, source="local")dfire_model = torch.hub.load(    YOLOV5_DIR, "custom", path=DFIRE_PT, source="local")print("COCO 模型类别：", coco_model.names)print("D-Fire 模型类别：", dfire_model.names)print("两个模型加载成功")
+运行:
+Set-Location "E:\model"python ".\check_models.py"
+成功标志：COCO 类别中包含 person、car、dog 等；D-Fire 类别中包含 fire、smoke。D-Fire 类别可能显示为 Fire、Smoke，服务程序会统一转为小写。
+七 创建双模型服务
+用记事本新建 E:\model\server.py，复制以下完整代码。
+# -*- coding: utf-8 -*-"""YOLOv5 双模型校园安防识别服务。"""from pathlib import Pathimport shutilimport threadingimport timeimport requestsimport torchimport uvicornfrom fastapi import FastAPI# 固定目录。ROOT = Path(r"E:\model")YOLOV5_DIR = ROOT / "yolov5"COCO_PT = ROOT / "models" / "yolov5s-coco.pt"DFIRE_PT = ROOT / "models" / "yolov5s-dfire.pt"WATCH_DIR = ROOT / "ai-watch"DONE_DIR = WATCH_DIR / "已检测"# Java 后端接收 AI 结果的接口。BACKEND_URL = "http://127.0.0.1:8080/api/ai/event"# 只处理这些图片格式。IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png"}WATCH_DIR.mkdir(parents=True, exist_ok=True)DONE_DIR.mkdir(parents=True, exist_ok=True)# 同时加载两个现成权重。coco_model = torch.hub.load(    str(YOLOV5_DIR), "custom", path=str(COCO_PT), source="local")dfire_model = torch.hub.load(    str(YOLOV5_DIR), "custom", path=str(DFIRE_PT), source="local")# 两个入口可能同时调用模型，用锁保证依次识别。model_lock = threading.Lock()app = FastAPI(title="YOLOv5 双模型校园安防识别服务")def result_to_objects(result) -&gt; list[dict]:    """把 YOLOv5 结果转换成 Java 后端需要的格式。"""    objects = []    # 每一行依次是 x1、y1、x2、y2、置信度、类别编号。    for row in result.xyxy[0].cpu().tolist():        confidence = float(row[4])        class_id = int(row[5])        # 模型类别名称可能是字典或列表。        class_name = result.names[class_id]        objects.append({            "class": str(class_name).lower(),            "conf": confidence,        })    return objectsdef recognize(image_path: Path) -&gt; list[dict]:    """同一张图片分别交给两个模型，然后合并结果。"""    with model_lock:        coco_result = coco_model(str(image_path))        dfire_result = dfire_model(str(image_path))    coco_objects = result_to_objects(coco_result)    dfire_objects = result_to_objects(dfire_result)    return coco_objects + dfire_objects@app.get("/")def home():    """浏览器访问该接口，检查服务是否启动。"""    return {        "status": "ok",        "cocoModel": str(COCO_PT),        "dfireModel": str(DFIRE_PT),        "watch": str(WATCH_DIR),        "done": str(DONE_DIR),    }@app.get("/detect")def detect(url: str = r"E:\model\yolov5\data\images\bus.jpg"):    """手工识别接口；不传地址时识别 YOLOv5 自带图片。"""    image_path = Path(url)    if not image_path.is_file():        return {"status": "error", "message": "图片不存在"}    return {"status": "ok", "objects": recognize(image_path)}def move_to_done(source: Path) -&gt; Path:    """把图片移动到已检测；重名时在文件名后添加时间。"""    target = DONE_DIR / source.name    if target.exists():        stamp = time.strftime("%Y%m%d_%H%M%S")        target = DONE_DIR / f"{source.stem}_{stamp}{source.suffix}"    shutil.move(str(source), str(target))    return targetdef watch_images():    """每 2 秒检查一次 ai-watch。"""    print(f"[监听] {WATCH_DIR}")    while True:        for image_path in WATCH_DIR.iterdir():            # 忽略文件夹和非图片文件。            if not image_path.is_file():                continue            if image_path.suffix.lower() not in IMAGE_SUFFIXES:                continue            try:                # 使用两个模型识别同一张图片。                objects = recognize(image_path)                # 识别完成后移动图片。                done_path = move_to_done(image_path)                # 按 Java 后端要求组织 JSON。                payload = {                    "image": done_path.name,                    "imagePath": str(done_path),                    "objects": objects,                }                # 提交识别结果。                response = requests.post(                    BACKEND_URL, json=payload, timeout=10                )                print(                    f"[完成] {done_path.name} | "                    f"{objects} | 后端状态 {response.status_code}"                )            except Exception as error:                # 一张图片失败不会停止整个服务。                print(f"[失败] {image_path.name} | {error}")        # 每轮扫描后等待 2 秒。        time.sleep(2)# 在后台启动目录监听。threading.Thread(target=watch_images, daemon=True).start()if __name__ == "__main__":    # 监听 8000 端口，与 Java 后端配置一致。    uvicorn.run(app, host="0.0.0.0", port=8000)
+八 启动模型服务和 Java 后端
+启动模型服务
+Set-Location "E:\model"&amp; ".\yolovenv\Scripts\Activate.ps1"python ".\server.py"
+成功标志：看到 Uvicorn running on http://0.0.0.0:8000。浏览器访问 http://localhost:8000，应返回 status=ok。模型窗口保持运行。
+启动 Java 后端
+再打开一个 PowerShell 窗口：
+Set-Location "E:\dshh\北方工业大学\智能安防远程监控与告警平台项目"java -jar ".\target\security-monitor-1.0.0.jar"
+成功标志：看到 Tomcat started on port 8080。浏览器访问 http://localhost:8080。
+九 投放图片并检查联动
+桌面测试图片位于 C:\Users\Lenovo\Desktop\校园安防AI测试图片。每次投放一张，等待处理完成后再投放下一张。
+第 1 步  测试人员场景
+Copy-Item "C:\Users\Lenovo\Desktop\校园安防AI测试图片\01_A区西门_单人闯入.png" "E:\model\ai-watch\"
+第 2 步  测试人员聚集
+Copy-Item "C:\Users\Lenovo\Desktop\校园安防AI测试图片\02_教学楼南侧_人员聚集.png" "E:\model\ai-watch\"
+第 3 步  测试烟雾
+Copy-Item "C:\Users\Lenovo\Desktop\校园安防AI测试图片\08_仓库外侧_白色烟雾.png" "E:\model\ai-watch\"
+第 4 步  测试明火
+Copy-Item "C:\Users\Lenovo\Desktop\校园安防AI测试图片\09_实验楼后侧_垃圾桶明火.png" "E:\model\ai-watch\"
+第 5 步  测试正常场景
+Copy-Item "C:\Users\Lenovo\Desktop\校园安防AI测试图片\10_校园广场_正常空场景.png" "E:\model\ai-watch\"
+每张图片约 2 秒后被扫描。实际推理时间取决于电脑性能。识别完成后图片移动到 E:\model\ai-watch\已检测；模型服务打印 objects 和后端状态码；后端根据结果生成对应告警。
+十 常见问题
+问题
+处理
+py -3.10 找不到
+安装 Python 3.10，并勾选 Add python.exe to PATH。
+无法激活虚拟环境
+执行 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass。
+git 找不到
+从 GitHub 下载 YOLOv5 ZIP，解压到 E:\model\yolov5。
+No module named torch
+激活 yolovenv 后重新安装 YOLOv5 requirements.txt。
+D-Fire 权重加载失败
+确认下载的是作者提供的 YOLOv5 small .pt，并使用配套 YOLOv5 代码。
+D-Fire 类别不是 fire smoke
+停止使用该权重，重新核对下载文件。
+8000 端口被占用
+模型服务可能已启动，先访问 http://localhost:8000。
+8080 端口被占用
+Java 后端可能已启动，先访问 http://localhost:8080。
+图片没有移动
+检查 server.py 是否运行、图片格式是否为 jpg、jpeg 或 png。
+图片移动但没有告警
+查看 objects；未识别到后端关注类别时，后端会跳过。
+提交后端失败
+先确认 Java 后端 8080 已启动。
+十一 最终验收
+□ 能用一句话解释 YOLO、数据集、训练、推理和 .pt。
+□ E:\model\models 中有两个用途明确的权重。
+□ COCO 权重类别包含 person、car 等。
+□ D-Fire 权重类别包含 fire、smoke。
+□ server.py 能同时加载两个模型。
+□ http://localhost:8000 能访问。
+□ http://localhost:8080 能访问。
+□ 人员图片能生成 person 结果。
+□ 烟火图片能生成 fire 或 smoke 结果。
+□ 图片处理后移动到 ai-watch\已检测。
+□ 识别结果能提交后端并形成告警。
+关闭服务
+先在 Java 后端窗口按 Ctrl+C，再在模型服务窗口按 Ctrl+C。
+附录  训练（可选）
+本实训主体不需要训练。下面给出两个模型的训练流程，帮助理解“数据集 → 训练 → 权重”的关系。训练复用第四节安装好的 E:\model\yolovenv 与 E:\model\yolov5；训练产物位于 runs\train\...\weights\best.pt，可参照第五节复制到 models 后使用（覆盖前建议先备份原权重）。CPU 训练较慢，若只为熟悉流程，可按注释把 --epochs 改小。
+一 COCO8 训练
+第 1 步  新建数据集配置 E:\model\yolov5\data\coco8.yaml
+# COCO8：COCO train2017 前 8 张图（4 训练 + 4 验证），仅用于演示训练流程
+path: ../datasets/coco8   # 数据集根目录（相对 yolov5 所在层级）
+train: images/train       # 训练集图片目录（相对 path），4 张
+val: images/val           # 验证集图片目录（相对 path），4 张
+names:
+0: person
+1: bicycle
+2: car
+3: motorcycle
+4: airplane
+5: bus
+6: train
+7: truck
+8: boat
+9: traffic light
+10: fire hydrant
+11: stop sign
+12: parking meter
+13: bench
+14: bird
+15: cat
+16: dog
+17: horse
+18: sheep
+19: cow
+20: elephant
+21: bear
+22: zebra
+23: giraffe
+24: backpack
+25: umbrella
+26: handbag
+27: tie
+28: suitcase
+29: frisbee
+30: skis
+31: snowboard
+32: sports ball
+33: kite
+34: baseball bat
+35: baseball glove
+36: skateboard
+37: surfboard
+38: tennis racket
+39: bottle
+40: wine glass
+41: cup
+42: fork
+43: knife
+44: spoon
+45: bowl
+46: banana
+47: apple
+48: sandwich
+49: orange
+50: broccoli
+51: carrot
+52: hot dog
+53: pizza
+54: donut
+55: cake
+56: chair
+57: couch
+58: potted plant
+59: bed
+60: dining table
+61: toilet
+62: tv
+63: laptop
+64: mouse
+65: remote
+66: keyboard
+67: cell phone
+68: microwave
+69: oven
+70: toaster
+71: sink
+72: refrigerator
+73: book
+74: clock
+75: vase
+76: scissors
+77: teddy bear
+78: hair drier
+79: toothbrush
+# 下载脚本/URL：第一次训练会自动下载并解压到 E:\model\datasets\coco8
+download: https://github.com/ultralytics/assets/releases/download/v0.0.0/coco8.zip
+说明：path 使用相对路径 ../datasets/coco8，配合 download 字段会在首次训练时自动下载并解压到 E:\model\datasets\coco8，无需手动下载。
+第 2 步  激活环境（第四节若已完成可跳过）
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass   # 允许执行脚本
+&amp; "E:\model\yolovenv\Scripts\Activate.ps1"                 # 激活 Python 虚拟环境
+第 3 步  开始训练
+Set-Location "E:\model\yolov5"    # 切换到 YOLOv5 代码目录
+python train.py ^
+--data coco8.yaml ^     # 数据集配置（上一步新建的文件）
+--weights yolov5s.pt ^  # 预训练权重，也可改 yolov5n/m/l/x
+--epochs 100 ^          # 训练轮数；演示可改为 5
+--batch 8 ^             # 每次处理的图片数，按内存调整
+--imgsz 640 ^           # 图片输入尺寸
+--device cpu ^          # 用 CPU；有显卡可改 0
+--name coco8            # 结果保存到 runs\train\coco8
+成功标志：出现 Epoch 进度、逐类精度 P/R/mAP 表格，结束时日志会输出 best.pt 与 last.pt。
+第 4 步  用最佳权重验证
+Set-Location "E:\model\yolov5"
+python val.py --data coco8.yaml --weights runs\train\coco8\weights\best.pt --device cpu
+第 5 步  使用训练得到的权重（可选）
+Copy-Item "E:\model\yolov5\runs\train\coco8\weights\best.pt" "E:\model\models\yolov5s-coco.pt" -Force
+覆盖后，第五节到第九节的流程将使用这份新权重；若想还原，用原先备份的 yolov5s-coco.pt 覆盖回去即可。
+二 D-Fire 训练
+第 1 步  下载 D-Fire 数据集
+浏览器打开数据集仓库 https://github.com/gaiasd/DFireDataset （README 中给出下载链接），或直接下载以下任一来源，下载后解压并记下解压路径：
+· OneDrive：Training, validation and test sets（已按 train/val/test 划分）
+· OneDrive：D-Fire dataset (only images and labels)
+· Kaggle 现成 YOLO 版：https://www.kaggle.com/datasets/sayedgamal99/smoke-fire-detection-yolo
+第 2 步  整理成 YOLOv5 目录结构
+D-Fire 标注为 YOLO 格式，类别为 0=Fire、1=Smoke。把图片与同名 .txt 标注放到下面结构：
+E:\model\datasets\DFire
+├─ images
+│  ├─ train        # 训练集图片
+│  └─ val          # 验证集图片
+├─ labels
+│  ├─ train        # 与图片同名的标注 .txt
+│  └─ val
+└─ DFire.yaml      # 数据集配置，见第 3 步
+若下载的是“only images and labels”平铺目录，可把下方脚本中的 D:\dfire_src 换成你的解压路径，自动按约 8:2 划分（第 1 条命令分行执行）：
+$src = "D:\dfire_src"                      # 你的解压目录
+$dst = "E:\model\datasets\DFire"
+New-Item -ItemType Directory -Force "$dst\images\train","$dst\images\val","$dst\labels\train","$dst\labels\val" | Out-Null
+$imgs = Get-ChildItem $src -Recurse -Include *.jpg,*.jpeg,*.png
+$n = 0                                     # 计数
+foreach ($img in $imgs) {
+$lab = Join-Path $img.DirectoryName ($img.BaseName + ".txt")
+if (-not (Test-Path $lab)) { continue }    # 无标注的图跳过
+$set = if (($n % 10) -lt 2) { "val" } else { "train" }   # 两成做验证
+Copy-Item $img.FullName "$dst\images\$set\" -Force
+Copy-Item $lab    "$dst\labels\$set\" -Force
+$n++
+}
+Write-Output "已整理 $n 张带标注图片"
+第 3 步  新建配置 E:\model\yolov5\data\DFire.yaml
+# D-Fire 烟火数据集：2 类（0=Fire, 1=Smoke）
+path: ../datasets/DFire   # 数据集根目录
+train: images/train       # 训练集
+val: images/val           # 验证集
+names:
+0: Fire
+1: Smoke
+第 4 步  开始训练
+Set-Location "E:\model\yolov5"
+&amp; "E:\model\yolovenv\Scripts\Activate.ps1"
+python train.py ^
+--data DFire.yaml ^   # D-Fire 数据集配置
+--weights yolov5s.pt ^
+--epochs 100 ^        # 训练轮数
+--batch 8 ^           # 每次处理的图片数
+--imgsz 640 ^         # 图片输入尺寸
+--device cpu ^        # 用 CPU；有显卡可改 0
+--name dfire          # 结果保存到 runs\train\dfire
+成功标志：日志出现 Overriding model.yaml nc=80 with nc=2，说明模型已调整为 2 类；权重类别为 Fire、Smoke。
+第 5 步  验证并替换服务使用权重
+Set-Location "E:\model\yolov5"
+python val.py --data DFire.yaml --weights runs\train\dfire\weights\best.pt --device cpu
+Copy-Item "E:\model\yolov5\runs\train\dfire\weights\best.pt" "E:\model\models\yolov5s-dfire.pt" -Force
+server.py 直接加载 E:\model\models\yolov5s-dfire.pt；其类别 Fire、Smoke 会被程序统一转成小写 fire、smoke，与后端业务判断一致。

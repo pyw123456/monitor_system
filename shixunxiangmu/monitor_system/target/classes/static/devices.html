@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>设备信息 · 智瞳 AI智能安防监控系统</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* 设备表：默认隐藏勾选列，进入选择模式（.select-mode）后显示 */
+    #deviceTable:not(.select-mode) th:first-child,
+    #deviceTable:not(.select-mode) td:first-child { display: none; }
+  </style>
+</head>
+<body>
+<div class="frame">
+
+  <!-- ================= 顶栏 ================= -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo-badge">
+        <svg viewBox="0 0 24 24" width="21" height="21" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="gShieldTop" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#2AD6FF"/><stop offset="1" stop-color="#8B7CFF"/>
+            </linearGradient>
+          </defs>
+          <path d="M12 1.8 3.8 4.9v6.3c0 5.2 3.5 9.8 8.2 11.2 4.7-1.4 8.2-6 8.2-11.2V4.9L12 1.8z" fill="url(#gShieldTop)"/>
+          <ellipse cx="12" cy="10.6" rx="3.7" ry="2.7" fill="#0A1120"/>
+          <circle cx="12" cy="10.6" r="1.5" fill="#7BE4FF"/>
+          <path d="M8.3 15.6l2-1.7M15.7 15.6l-2-1.7" stroke="#0A1120" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="logo-title">智瞳 · AI智能安防监控系统<span class="en">ZHITONG · AI SECURITY MONITOR</span></div>
+    </div>
+    <div class="top-right">
+      <div class="sys-time"><span id="sysTime">--:--:--</span><span class="date" id="sysDate">----</span></div>
+      <button class="bell-btn" title="告警通知">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 9a6 6 0 0 1 12 0c0 5 2 6.2 2 6.2H4S6 14 6 9z"/>
+          <path d="M10.3 19.5a2 2 0 0 0 3.4 0"/>
+        </svg>
+      </button>
+      <div class="avatar-chip">
+        <div class="avatar">管</div>
+        <div class="who">管理员<span class="role">超级管理员</span></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- ================= 侧栏 ================= -->
+    <aside class="sidebar">
+      <nav class="side-nav">
+        <a class="nav-item" href="index.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>
+          </svg>
+          监控大屏
+        </a>
+        <a class="nav-item active" href="devices.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2.5" y="6.5" width="13" height="11" rx="2"/><path d="M15.5 10.5 21.5 7.2v9.6l-6-3.3"/>
+          </svg>
+          设备信息
+        </a>
+        <a class="nav-item" href="records.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 8V5.5A1.5 1.5 0 0 1 5.5 4H8M16 4h2.5A1.5 1.5 0 0 1 20 5.5V8M20 16v2.5a1.5 1.5 0 0 1-1.5 1.5H16M8 20H5.5A1.5 1.5 0 0 1 4 18.5V16"/><circle cx="12" cy="12" r="3.2"/>
+          </svg>
+          AI识别记录
+        </a>
+        <a class="nav-item" href="alarms.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 9a6 6 0 0 1 12 0c0 5 2 6.2 2 6.2H4S6 14 6 9z"/><path d="M10.3 19.5a2 2 0 0 0 3.4 0"/>
+          </svg>
+          实时告警中心
+        </a>
+        <a class="nav-item" href="handling.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 4.5H7a2 2 0 0 0-2 2V19a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6.5a2 2 0 0 0-2-2h-2"/>
+            <rect x="9" y="2.8" width="6" height="3.4" rx="1.2"/>
+            <path d="M9 13.5l2.2 2.2 4-4.4"/>
+          </svg>
+          告警处置记录
+        </a>
+      </nav>
+
+      </aside>
+
+    <!-- ================= 主内容 ================= -->
+    <main class="main">
+      <div class="content">
+
+        <!-- 页头 -->
+        <div class="page-header">
+          <div class="page-title">设备信息</div>
+          <div class="tools">
+            <div class="search-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+              <input type="text" id="searchInput" placeholder="搜索设备编号 / 名称">
+            </div>
+            <div class="pill-group" id="deviceFilter">
+              <button class="pill active" data-filter-table="all">全部 <span class="num" id="pillAll">10</span></button>
+              <button class="pill" data-filter-table="online">在线 <span class="num" id="pillOnline">10</span></button>
+              <button class="pill" data-filter-table="offline">离线 <span class="num" id="pillOffline">0</span></button>
+              <button class="pill" data-filter-table="fault">故障 <span class="num" id="pillFault">0</span></button>
+            </div>
+            <button class="btn btn-primary" id="btnAddDevice">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+              新增设备
+            </button>
+          </div>
+        </div>
+
+        <!-- 状态汇总 KPI -->
+        <div class="kpi-row">
+          <div class="kpi" style="--kpi-accent:#2AD6FF; --kpi-dim:var(--cyan-dim)">
+            <div class="kpi-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="7" rx="1.5"/><rect x="3" y="13" width="18" height="7" rx="1.5"/><path d="M7 7.5h.01M7 16.5h.01"/></svg>
+              设备总数
+            </div>
+            <div class="kpi-value"><span id="kpiTotal">10</span><span class="unit">台</span></div>
+            <div class="kpi-foot"></div>
+            <div class="kpi-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6.5" width="13" height="11" rx="2"/><path d="M15.5 10.5 21.5 7.2v9.6l-6-3.3"/></svg>
+            </div>
+          </div>
+          <div class="kpi" style="--kpi-accent:#3DDC97; --kpi-dim:var(--green-dim)">
+            <div class="kpi-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h4l3-8 4 16 3-8h6"/></svg>
+              在线设备
+            </div>
+            <div class="kpi-value" style="color:var(--muted)"><span id="kpiOnline">10</span><span class="unit">台</span></div>
+            <div class="kpi-foot">在线率 <span class="mono" id="kpiOnlineRate">100%</span></div>
+            <div class="kpi-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+            </div>
+          </div>
+          <div class="kpi" style="--kpi-accent:#FFC53D; --kpi-dim:var(--yellow-dim)">
+            <div class="kpi-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg>
+              离线设备
+            </div>
+            <div class="kpi-value" style="color:var(--muted)"><span id="kpiOffline">0</span><span class="unit">台</span></div>
+            <div class="kpi-foot"></div>
+            <div class="kpi-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+            </div>
+          </div>
+          <div class="kpi" style="--kpi-accent:#3DDC97; --kpi-dim:var(--green-dim)">
+            <div class="kpi-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 16H3l9-16z"/><path d="M12 10v4M12 17h.01"/></svg>
+              故障设备
+            </div>
+            <div class="kpi-value" style="color:var(--muted)"><span id="kpiFault">0</span><span class="unit">台</span></div>
+            <div class="kpi-foot"></div>
+            <div class="kpi-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- 设备表格 -->
+        <div class="card table-card">
+          <div class="card-head">
+            <span class="card-title">设备列表</span>
+            <span class="sub">共 <span class="mono">10</span> 台设备</span>
+            <div style="margin-left:auto; display:flex; gap:10px;">
+              <button class="btn btn-ghost btn-sm" id="btnBatchImport">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M4 19h16"/></svg>
+                批量导入
+              </button>
+              <button class="btn btn-ghost btn-sm" id="btnExport">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 7l5-5 5 5M4 19h16"/></svg>
+                导出
+              </button>
+              <button class="btn btn-ghost btn-sm" id="btnDelete" style="color:#FF5D5D;" title="勾选设备进行删除">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M10 11v6M14 11v6"/></svg>
+                删除
+              </button>
+              <button class="btn btn-ghost btn-sm" id="btnCancelSel" style="display:none;" title="取消删除，收起复选框">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                取消
+              </button>
+              <button class="btn btn-ghost btn-sm" id="btnConfirmDel" style="display:none; color:#FF5D5D;" title="删除勾选的设备" disabled>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M10 11v6M14 11v6"/></svg>
+                确认删除
+              </button>
+            </div>
+          </div>
+
+          <div class="table-scroll">
+            <table class="dt" id="deviceTable">
+              <thead>
+                <tr>
+                  <th style="width:36px;"><input type="checkbox" id="checkAll" title="全选/取消全选" style="accent-color:#2AD6FF; cursor:pointer; margin:0;"></th>
+                  <th>设备编号</th><th>设备名称</th><th>类型</th><th>安装位置</th>
+                  <th>IP地址</th><th>状态</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-status="online">
+                  <td><input type="checkbox" class="row-check" style="accent-color:#2AD6FF; cursor:pointer; margin:0;"></td>
+                  <td><span class="mono">01</span></td><td>A区西门摄像头</td><td>摄像头</td><td>A区西门</td>
+                  <td><span class="mono">----</span></td><td><span class="status-pill green">正常</span></td>
+                </tr>
+                <tr data-status="online">
+                  <td><input type="checkbox" class="row-check" style="accent-color:#2AD6FF; cursor:pointer; margin:0;"></td>
+                  <td><span class="mono">02</span></td><td>教学楼南侧摄像头</td><td>摄像头</td><td>教学楼南侧</td>
+                  <td><span class="mono">----</span></td><td><span class="status-pill green">正常</span></td>
+                </tr>
+                <tr data-status="online">
+                  <td><input type="checkbox" class="row-check" style="accent-color:#2AD6FF; cursor:pointer; margin:0;"></td>
+                  <td><span class="mono">03</span></td><td>校园道路摄像头</td><td>摄像头</td><td>校园道路</td>
+                  <td><span class="mono">----</span></td><td><span class="status-pill green">正常</span></td>
+                </tr>
+                <tr data-status="online">
+                  <td><input type="checkbox" class="row-check" style="accent-color:#2AD6FF; cursor:pointer; margin:0;"></td>
+                  <td><span class="mono">04</span></td><td>宿舍区摄像头</td><td>摄像头</td><td>宿舍区</td>
+                  <td><span class="mono">----</span></td><td><span class="status-pill green">正常</span></td>
+                </tr>
+                <tr data-status="online">
+                  <td><input type="checkbox" class="row-check" style="accent-color:#2AD6FF; cursor:pointer; margin:0;"></td>
+                  <td><span class="mono">05</span></td><td>操场入口摄像头</td><td>摄像头</td><td>操场入口</td>
+                  <td><span class="mono">----</span></td><td><span class="status-pill green">正常</span></td>
+                </tr>
+                <tr data-status="online">
+                  <td><input type="checkbox" class="row-check" style="accent-color:#2AD6FF; cursor:pointer; margin:0;"></td>
+                  <td><span class="mono">06</span></td><td>图书馆门口摄像头</td><td>摄像头</td><td>图书馆门口</td>
+                  <td><span class="mono">----</span></td><td><span class="status-pill green">正常</span></td>
+                </tr>
+                <tr data-status="online">
+                  <td><input type="checkbox" class="row-check" style="accent-color:#2AD6FF; cursor:pointer; margin:0;"></td>
+                  <td><span class="mono">07</span></td><td>停车场摄像头</td><td>摄像头</td><td>停车场</td>
+                  <td><span class="mono">----</span></td><td><span class="status-pill green">正常</span></td>
+                </tr>
+                <tr data-status="online">
+                  <td><input type="checkbox" class="row-check" style="accent-color:#2AD6FF; cursor:pointer; margin:0;"></td>
+                  <td><span class="mono">08</span></td><td>仓库外侧摄像头</td><td>摄像头</td><td>仓库外侧</td>
+                  <td><span class="mono">----</span></td><td><span class="status-pill green">正常</span></td>
+                </tr>
+                <tr data-status="online">
+                  <td><input type="checkbox" class="row-check" style="accent-color:#2AD6FF; cursor:pointer; margin:0;"></td>
+                  <td><span class="mono">09</span></td><td>实验楼后侧摄像头</td><td>摄像头</td><td>实验楼后侧</td>
+                  <td><span class="mono">----</span></td><td><span class="status-pill green">正常</span></td>
+                </tr>
+                <tr data-status="online">
+                  <td><input type="checkbox" class="row-check" style="accent-color:#2AD6FF; cursor:pointer; margin:0;"></td>
+                  <td><span class="mono">10</span></td><td>校园广场摄像头</td><td>摄像头</td><td>校园广场</td>
+                  <td><span class="mono">----</span></td><td><span class="status-pill green">正常</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 分页器 -->
+          <div class="pager">
+            <span class="page-info">共 <span class="mono" id="pagerTotal">10</span> 条记录</span>
+            <button class="pg" disabled>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6l-6 6 6 6"/></svg>
+            </button>
+            <button class="pg active">1</button>
+            <button class="pg" disabled>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ===== 新增设备弹窗（仅本页使用，样式内联，不影响全局布局） ===== -->
+<div id="deviceModal" style="display:none; position:fixed; inset:0; z-index:999; background:rgba(4,9,18,.65); align-items:center; justify-content:center;">
+  <div style="width:400px; max-width:calc(100vw - 48px); background:#121E36; border:1px solid rgba(148,178,224,.18); border-radius:14px; box-shadow:0 24px 60px rgba(0,0,0,.55); padding:22px 24px;">
+    <div style="font-weight:700; font-size:15px; color:#E8F0FB; margin-bottom:4px;">新增设备</div>
+    <div style="font-size:12px; color:#8CA2C3; margin-bottom:16px;">填写设备信息，保存后将自动追加到设备列表末尾</div>
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <div>
+        <div style="font-size:12px; color:#8CA2C3; margin-bottom:6px;">设备名称 <span style="color:#FF5D5D;">*</span></div>
+        <input id="inpDevName" type="text" placeholder="如：食堂入口摄像头" style="width:100%; box-sizing:border-box; height:36px; padding:0 12px; background:#0A1120; border:1px solid rgba(148,178,224,.18); border-radius:8px; color:#E8F0FB; font-size:13px; outline:none;">
+      </div>
+      <div>
+        <div style="font-size:12px; color:#8CA2C3; margin-bottom:6px;">类型 <span style="color:#FF5D5D;">*</span></div>
+        <input id="inpDevType" type="text" placeholder="如：摄像头" style="width:100%; box-sizing:border-box; height:36px; padding:0 12px; background:#0A1120; border:1px solid rgba(148,178,224,.18); border-radius:8px; color:#E8F0FB; font-size:13px; outline:none;">
+      </div>
+      <div>
+        <div style="font-size:12px; color:#8CA2C3; margin-bottom:6px;">安装位置 <span style="color:#FF5D5D;">*</span></div>
+        <input id="inpDevArea" type="text" placeholder="如：食堂入口" style="width:100%; box-sizing:border-box; height:36px; padding:0 12px; background:#0A1120; border:1px solid rgba(148,178,224,.18); border-radius:8px; color:#E8F0FB; font-size:13px; outline:none;">
+      </div>
+    </div>
+    <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:20px;">
+      <button class="btn btn-ghost btn-sm" id="btnModalCancel">取消</button>
+      <button class="btn btn-primary btn-sm" id="btnModalOk">确认添加</button>
+    </div>
+  </div>
+</div>
+
+<!-- 批量导入用隐藏文件选择框 -->
+<input type="file" id="fileImport" accept=".dat,.txt" style="display:none;">
+
+<script src="js/common.js"></script>
+<script>
+  /* ===== 设备筛选：状态胶囊 + 搜索（编号/名称），两者叠加生效 ===== */
+  var activeFilter = 'all';   /* 当前状态胶囊 */
+  var searchKeyword = '';     /* 当前搜索关键字 */
+
+  function applyFilters() {
+    var kw = searchKeyword.trim().toLowerCase();
+    document.querySelectorAll('#deviceTable tbody tr').forEach(function (tr) {
+      var tds = tr.querySelectorAll('td');
+      var st = tr.getAttribute('data-status');
+      var matchStatus = (activeFilter === 'all' || st === activeFilter);
+      var matchKw = !kw;
+      if (!matchKw && tds.length >= 3) {
+        var no = tds[1].textContent.trim().toLowerCase();    /* 编号 */
+        var name = tds[2].textContent.trim().toLowerCase();   /* 名称 */
+        matchKw = no.indexOf(kw) !== -1 || name.indexOf(kw) !== -1;
+      }
+      tr.style.display = (matchStatus && matchKw) ? '' : 'none';
+    });
+  }
+
+  (function () {
+    /* 状态胶囊 */
+    var pills = document.querySelectorAll('#deviceFilter .pill');
+    pills.forEach(function (pill) {
+      pill.addEventListener('click', function () {
+        activeFilter = pill.getAttribute('data-filter-table');
+        applyFilters();
+      });
+    });
+
+    /* 搜索框：输入即时过滤（编号 / 名称，不区分大小写） */
+    document.getElementById('searchInput').addEventListener('input', function () {
+      searchKeyword = this.value;
+      applyFilters();
+    });
+  })();
+
+  /* ===== 设备导入 / 导出 ===== */
+  (function () {
+    var tbody = document.querySelector('#deviceTable tbody');
+    var countEl = document.querySelector('.table-card .card-head .sub .mono');
+    var modal = document.getElementById('deviceModal');
+    var inpName = document.getElementById('inpDevName');
+    var inpType = document.getElementById('inpDevType');
+    var inpArea = document.getElementById('inpDevArea');
+    var fileInput = document.getElementById('fileImport');
+
+    function pad(n) { return (n < 10 ? '0' : '') + n; }
+
+    /* 当前最大编号 + 1，编号依次往下写 */
+    function nextNo() {
+      var max = 0;
+      tbody.querySelectorAll('tr').forEach(function (tr) {
+        var cell = tr.querySelector('td .mono');
+        if (cell) {
+          var n = parseInt(cell.textContent, 10);
+          if (!isNaN(n) && n > max) max = n;
+        }
+      });
+      return max + 1;
+    }
+
+    /* 追加一行设备（IP 暂无、状态默认正常） */
+    function addRow(name, type, area) {
+      var tr = document.createElement('tr');
+      tr.setAttribute('data-status', 'online');
+      tr.innerHTML =
+        '<td><input type="checkbox" class="row-check" style="accent-color:#2AD6FF; cursor:pointer; margin:0;"></td>' +
+        '<td><span class="mono">' + pad(nextNo()) + '</span></td>' +
+        '<td></td><td></td><td></td>' +
+        '<td><span class="mono">----</span></td>' +
+        '<td><span class="status-pill green">正常</span></td>';
+      var tds = tr.querySelectorAll('td');
+      tds[2].textContent = name;   /* textContent 防注入 */
+      tds[3].textContent = type;
+      tds[4].textContent = area;
+      tbody.appendChild(tr);
+      refreshCount();
+      applyFilters();      /* 新行需遵循当前筛选/搜索状态 */
+      syncCheckAll();
+    }
+
+    /* 同步卡片头部“共 X 台设备”，并联动 KPI 卡、筛选胶囊计数、分页器 */
+    function refreshCount() {
+      var total = tbody.querySelectorAll('tr').length;
+      var online = tbody.querySelectorAll('tr[data-status="online"]').length;
+      var offline = tbody.querySelectorAll('tr[data-status="offline"]').length;
+      var fault = tbody.querySelectorAll('tr[data-status="fault"]').length;
+      if (countEl) countEl.textContent = total;
+      setText('kpiTotal', total);
+      setText('kpiOnline', online);
+      setText('kpiOffline', offline);
+      setText('kpiFault', fault);
+      setText('kpiOnlineRate', (total > 0 ? Math.round(online / total * 100) : 0) + '%');
+      setText('pillAll', total);
+      setText('pillOnline', online);
+      setText('pillOffline', offline);
+      setText('pillFault', fault);
+      setText('pagerTotal', total);
+    }
+
+    function setText(id, val) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = val;
+    }
+
+    refreshCount();
+
+    /* ---------- 单条新增 ---------- */
+    function openModal() {
+      inpName.value = ''; inpType.value = ''; inpArea.value = '';
+      modal.style.display = 'flex';
+      setTimeout(function () { inpName.focus(); }, 50);
+    }
+    function closeModal() { modal.style.display = 'none'; }
+
+    function submitModal() {
+      var name = inpName.value.trim();
+      var type = inpType.value.trim();
+      var area = inpArea.value.trim();
+      if (!name || !type || !area) {
+        alert('请完整填写设备名称、类型、安装位置');
+        return;
+      }
+      addRow(name, type, area);
+      closeModal();
+    }
+
+    document.getElementById('btnAddDevice').addEventListener('click', openModal);
+    document.getElementById('btnModalCancel').addEventListener('click', closeModal);
+    document.getElementById('btnModalOk').addEventListener('click', submitModal);
+    modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modal.style.display === 'flex') closeModal();
+    });
+    [inpName, inpType, inpArea].forEach(function (inp) {
+      inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') submitModal(); });
+    });
+
+    /* ---------- 导出为 .dat：名称-类型-安装位置 每行一条 ---------- */
+    document.getElementById('btnExport').addEventListener('click', function () {
+      var lines = [];
+      tbody.querySelectorAll('tr').forEach(function (tr) {
+        var tds = tr.querySelectorAll('td');
+        if (tds.length >= 5) {
+          lines.push(tds[2].textContent.trim() + '-' + tds[3].textContent.trim() + '-' + tds[4].textContent.trim());
+        }
+      });
+      if (!lines.length) { alert('当前没有可导出的设备'); return; }
+      var blob = new Blob(['\ufeff' + lines.join('\r\n')], { type: 'application/octet-stream' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = '设备列表.dat';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 200);
+    });
+
+    /* ---------- 批量导入：格式同导出 ---------- */
+    document.getElementById('btnBatchImport').addEventListener('click', function () {
+      fileInput.value = '';
+      fileInput.click();
+    });
+
+    fileInput.addEventListener('change', function () {
+      var file = this.files && this.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function () {
+        var text = String(reader.result).replace(/^\ufeff/, '');
+        var added = 0, skipped = 0;
+        text.split(/\r?\n/).forEach(function (line) {
+          line = line.trim();
+          if (!line) return;
+          var parts = line.split('-');
+          if (parts.length >= 3 && parts[0].trim() && parts[1].trim() && parts[2].trim()) {
+            /* 位置中若含“-”则合并剩余部分 */
+            addRow(parts[0].trim(), parts[1].trim(), parts.slice(2).join('-').trim());
+            added++;
+          } else {
+            skipped++;
+          }
+        });
+        if (added || skipped) {
+          alert('批量导入完成：成功 ' + added + ' 条' + (skipped ? '，跳过格式不符 ' + skipped + ' 条' : ''));
+        } else {
+          alert('文件中没有可导入的设备记录');
+        }
+      };
+      reader.readAsText(file, 'UTF-8');
+    });
+
+    /* ---------- 删除：点“删除”进入勾选模式；点“取消”收起复选框退出 ---------- */
+    var checkAll = document.getElementById('checkAll');
+    var table = document.getElementById('deviceTable');
+    var btnDelete = document.getElementById('btnDelete');
+    var btnCancelSel = document.getElementById('btnCancelSel');
+    var btnConfirmDel = document.getElementById('btnConfirmDel');
+
+    /* 同步全选框状态（含半选） */
+    function syncCheckAll() {
+      var all = tbody.querySelectorAll('.row-check');
+      var sel = tbody.querySelectorAll('.row-check:checked');
+      checkAll.checked = all.length > 0 && all.length === sel.length;
+      checkAll.indeterminate = sel.length > 0 && sel.length < all.length;
+    }
+
+    /* 同步“确认删除”按钮可用态 */
+    function syncConfirmBtn() {
+      var n = tbody.querySelectorAll('.row-check:checked').length;
+      btnConfirmDel.disabled = (n === 0);
+      btnConfirmDel.style.opacity = (n === 0) ? '.45' : '';
+      syncCheckAll();
+    }
+
+    /* 进入选择模式：显示左侧复选框 */
+    function enterSelectMode() {
+      table.classList.add('select-mode');
+      btnDelete.style.display = 'none';
+      btnCancelSel.style.display = '';
+      btnConfirmDel.style.display = '';
+      syncConfirmBtn();
+    }
+
+    /* 退出选择模式：清空勾选并收起左侧复选框 */
+    function exitSelectMode() {
+      table.classList.remove('select-mode');
+      btnDelete.style.display = '';
+      btnCancelSel.style.display = 'none';
+      btnConfirmDel.style.display = 'none';
+      tbody.querySelectorAll('.row-check').forEach(function (c) { c.checked = false; });
+      checkAll.checked = false;
+      checkAll.indeterminate = false;
+    }
+
+    /* 删除 → 进入勾选模式 */
+    btnDelete.addEventListener('click', enterSelectMode);
+
+    /* 取消 → 不删除，收起复选框 */
+    btnCancelSel.addEventListener('click', exitSelectMode);
+
+    /* 确认删除 → 删除勾选的行 */
+    btnConfirmDel.addEventListener('click', function () {
+      var sel = tbody.querySelectorAll('.row-check:checked');
+      if (!sel.length) return;
+      if (!confirm('确定删除选中的 ' + sel.length + ' 台设备吗？')) return;
+      sel.forEach(function (c) {
+        var tr = c.closest('tr');
+        if (tr) tr.remove();
+      });
+      exitSelectMode();
+      refreshCount();
+    });
+
+    /* 全选 / 取消全选 */
+    checkAll.addEventListener('change', function () {
+      tbody.querySelectorAll('.row-check').forEach(function (c) {
+        c.checked = checkAll.checked;
+      });
+      syncConfirmBtn();
+    });
+
+    /* 单行勾选变化 → 事件委托（动态新增的行同样生效） */
+    tbody.addEventListener('change', function (e) {
+      if (e.target && e.target.classList.contains('row-check')) syncConfirmBtn();
+    });
+  })();
+</script>
+</body>
+</html>
